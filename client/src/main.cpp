@@ -1,10 +1,8 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/CreatorLayer.hpp>
-#include <Geode/ui/GeodeUI.hpp>
 #include <map>
 #include <string>
-#include <vector>
 
 using namespace geode::prelude;
 
@@ -24,32 +22,32 @@ public:
     void host() {
         isHosting = true;
         roomCode = std::to_string(100000 + rand() % 900000); 
-        Notification::create("Host created! Your code is " + roomCode, NotificationIcon::Success)->show();
+        FLAlertLayer::create("Host Created!", "Your code is: " + roomCode, "OK")->show();
     }
 
     void stopHost() {
         isHosting = false;
-        Notification::create("You successfully off Your host!", NotificationIcon::Info)->show();
+        FLAlertLayer::create("Info", "Host turned off!", "OK")->show();
     }
 
     void join(std::string code) {
         isJoined = true;
         roomCode = code;
-        Notification::create("Joined success!", NotificationIcon::Success)->show();
+        FLAlertLayer::create("Success", "Joined session: " + code, "OK")->show();
     }
 
     void disconnect() {
         isJoined = false;
-        Notification::create("You successfully disconnect host!", NotificationIcon::Info)->show();
+        FLAlertLayer::create("Info", "Disconnected from session!", "OK")->show();
     }
 
     void updateCursor(int id, CCPoint pos, LevelEditorLayer* layer) {
+        if (!layer || !layer->m_objectLayer) return;
+        
         remoteCursors[id] = pos;
         if (cursorSprites.find(id) == cursorSprites.end()) {
-            // Используем стандартный спрайт GD, чтобы не искать свои текстуры
             auto cursor = CCSprite::createWithSpriteFrameName("GJ_cursor_001.png");
-            if (!cursor) cursor = CCSprite::create("edit_ePointBtn_001.png"); 
-            
+            if (!cursor) return;
             cursor->setScale(0.8f);
             cursor->setOpacity(150);
             layer->m_objectLayer->addChild(cursor, 100);
@@ -66,15 +64,19 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         auto menu = this->getChildByID("creator-buttons-menu");
         if (!menu) return true;
 
+        // Кнопка Хоста
+        auto hostSprite = ButtonSprite::create("Host", "goldFont.fnt", "GJ_button_01.png", 0.6f);
         auto hostBtn = CCMenuItemSpriteExtra::create(
-            CircleButtonSprite::createWithSpriteFrameName("GJ_plusBtn_001.png", 0.8f, CircleBaseColor::Green),
+            hostSprite,
             this,
             menu_selector(MyCreatorLayer::onHost)
         );
         hostBtn->setID("host-button");
 
+        // Кнопка Присоединения
+        auto joinSprite = ButtonSprite::create("Join", "goldFont.fnt", "GJ_button_02.png", 0.6f);
         auto joinBtn = CCMenuItemSpriteExtra::create(
-            CircleButtonSprite::createWithSpriteFrameName("GJ_shareBtn_001.png", 0.8f, CircleBaseColor::Blue),
+            joinSprite,
             this,
             menu_selector(MyCreatorLayer::onJoin)
         );
@@ -89,7 +91,7 @@ class $modify(MyCreatorLayer, CreatorLayer) {
 
     void onHost(CCObject*) {
         if (CollabManager::get()->isJoined) {
-            FLAlertLayer::create("Error", "Disconnect from other host first!", "OK")->show();
+            FLAlertLayer::create("Error", "Leave other session first!", "OK")->show();
             return;
         }
         if (CollabManager::get()->isHosting) {
@@ -108,16 +110,7 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         if (CollabManager::get()->isJoined) {
             CollabManager::get()->disconnect();
         } else {
-            auto popup = geode::createQuickPopup(
-                "Join Collab",
-                "Do you want to join a session? \n(Logic for code input is in dev)",
-                "Cancel", "Join",
-                [](auto, bool btn2) {
-                    if (btn2) {
-                        CollabManager::get()->join("456272");
-                    }
-                }
-            );
+            CollabManager::get()->join("456272");
         }
     }
 };
@@ -125,7 +118,6 @@ class $modify(MyCreatorLayer, CreatorLayer) {
 class $modify(MyEditor, LevelEditorLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelEditorLayer::init(level, p1)) return false;
-        
         this->schedule(schedule_selector(MyEditor::syncLoop), 0.1f);
         return true;
     }
@@ -133,10 +125,9 @@ class $modify(MyEditor, LevelEditorLayer) {
     void syncLoop(float dt) {
         if (!CollabManager::get()->isHosting && !CollabManager::get()->isJoined) return;
         if (!m_editorUI) return;
-
-        // В GD 2.2 координаты тача получаем через m_lastTouchPoint
-        CCPoint myPos = m_objectLayer->convertTouchToNodeSpace(m_editorUI->m_lastTouchPoint);
         
-        // Логика отправки позиции на сервер будет тут
+        // В 2.2 touch position получается иначе, используем безопасный метод
+        CCPoint myPos = m_objectLayer->convertToNodeSpace(CCDirector::sharedDirector()->getWinSize() / 2); // Заглушка центра экрана
+        // Отправка на сервер будет добавлена при интеграции WS
     }
 };

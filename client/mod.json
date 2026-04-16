@@ -1,18 +1,18 @@
 {
-	"geode": "4.1.0",
+	"geode": "3.0.0",
 	"gd": {
-		"win": "2.207",
-		"android": "2.2.143"
+		"win": "2.206",
+		"android": "2.2.142"
 	},
-	"id": "yourname.editor_collab",
+	"id": "brokolyone.editor_collab",
 	"version": "v1.0.0",
 	"name": "Editor Collab",
-	"developer": "YourName",
-	"description": "Multiplayer editor for Geometry Dash using Geode.",
+	"developer": "Brokoly",
+	"description": "Multiplayer editor for Geometry Dash.",
 	"dependencies": [
 		{
 			"id": "geode.loader",
-			"version": "v4.1.0",
+			"version": "v3.0.0",
 			"importance": "required"
 		}
 	],
