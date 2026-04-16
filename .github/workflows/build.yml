@@ -34,3 +34,6 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+          # Добавляем принудительное обновление CLI и SDK
+          cli: latest
+          sdk: nightly
