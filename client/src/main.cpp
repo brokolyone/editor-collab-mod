@@ -2,6 +2,9 @@
 #include <Geode/modify/LevelEditorLayer.hpp>
 #include <Geode/modify/CreatorLayer.hpp>
 #include <Geode/ui/GeodeUI.hpp>
+#include <map>
+#include <string>
+#include <vector>
 
 using namespace geode::prelude;
 
@@ -19,10 +22,8 @@ public:
     std::map<int, CCSprite*> cursorSprites;
 
     void host() {
-        // Здесь должна быть логика отправки запроса на сервер (WS)
-        // Для примера имитируем ответ
         isHosting = true;
-        roomCode = "456272"; 
+        roomCode = std::to_string(100000 + rand() % 900000); 
         Notification::create("Host created! Your code is " + roomCode, NotificationIcon::Success)->show();
     }
 
@@ -45,9 +46,11 @@ public:
     void updateCursor(int id, CCPoint pos, LevelEditorLayer* layer) {
         remoteCursors[id] = pos;
         if (cursorSprites.find(id) == cursorSprites.end()) {
-            auto cursor = CCSprite::createWithSpriteFrameName("cursor.png"_spr);
-            if (!cursor) cursor = CCSprite::create("GJ_cursor.png"); // Fallback
-            cursor->setScale(0.5f);
+            // Используем стандартный спрайт GD, чтобы не искать свои текстуры
+            auto cursor = CCSprite::createWithSpriteFrameName("GJ_cursor_001.png");
+            if (!cursor) cursor = CCSprite::create("edit_ePointBtn_001.png"); 
+            
+            cursor->setScale(0.8f);
             cursor->setOpacity(150);
             layer->m_objectLayer->addChild(cursor, 100);
             cursorSprites[id] = cursor;
@@ -56,14 +59,13 @@ public:
     }
 };
 
-// Хук для добавления кнопок в CreatorLayer (меню Create)
 class $modify(MyCreatorLayer, CreatorLayer) {
     bool init() {
         if (!CreatorLayer::init()) return false;
 
         auto menu = this->getChildByID("creator-buttons-menu");
+        if (!menu) return true;
 
-        // Кнопка Хоста
         auto hostBtn = CCMenuItemSpriteExtra::create(
             CircleButtonSprite::createWithSpriteFrameName("GJ_plusBtn_001.png", 0.8f, CircleBaseColor::Green),
             this,
@@ -71,7 +73,6 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         );
         hostBtn->setID("host-button");
 
-        // Кнопка Присоединения
         auto joinBtn = CCMenuItemSpriteExtra::create(
             CircleButtonSprite::createWithSpriteFrameName("GJ_shareBtn_001.png", 0.8f, CircleBaseColor::Blue),
             this,
@@ -107,14 +108,12 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         if (CollabManager::get()->isJoined) {
             CollabManager::get()->disconnect();
         } else {
-            // Открываем поле ввода кода
-            geode::createQuickPopup(
+            auto popup = geode::createQuickPopup(
                 "Join Collab",
-                "Enter 6-digit code:",
+                "Do you want to join a session? \n(Logic for code input is in dev)",
                 "Cancel", "Join",
                 [](auto, bool btn2) {
                     if (btn2) {
-                        // Здесь логика получения текста из инпута (упрощено)
                         CollabManager::get()->join("456272");
                     }
                 }
@@ -123,7 +122,6 @@ class $modify(MyCreatorLayer, CreatorLayer) {
     }
 };
 
-// Хук для редактора - передача курсора и отрисовка чужих
 class $modify(MyEditor, LevelEditorLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelEditorLayer::init(level, p1)) return false;
@@ -134,11 +132,11 @@ class $modify(MyEditor, LevelEditorLayer) {
 
     void syncLoop(float dt) {
         if (!CollabManager::get()->isHosting && !CollabManager::get()->isJoined) return;
+        if (!m_editorUI) return;
 
-        // Получаем позицию своего курсора
+        // В GD 2.2 координаты тача получаем через m_lastTouchPoint
         CCPoint myPos = m_objectLayer->convertTouchToNodeSpace(m_editorUI->m_lastTouchPoint);
         
-        // Здесь должен быть код отправки myPos на сервер через WebSocket
-        // И получение списка чужих курсоров
+        // Логика отправки позиции на сервер будет тут
     }
 };
