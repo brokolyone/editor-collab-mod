@@ -1,19 +1,27 @@
 {
-	"geode": "2.2.1",
+	"geode": "3.0.0",
 	"gd": {
 		"win": "2.206",
 		"android": "2.2.142"
 	},
 	"id": "brokolyone.editor_collab_mod",
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"name": "Editor Collab",
 	"developer": "Brokoly",
-	"description": "Multiplayer editor for Geometry Dash.",
+	"description": "Full multiplayer editor for Geometry Dash. Host or Join sessions with 6-digit codes.",
 	"dependencies": [
 		{
 			"id": "geode.loader",
-			"version": "v2.2.1",
+			"version": "v3.0.0",
 			"importance": "required"
 		}
-	]
+	],
+    "settings": {
+        "server-url": {
+            "name": "Server URL",
+            "description": "The URL of the relay server (Selectel)",
+            "type": "string",
+            "default": "ws://your-server-ip:8080"
+        }
+    }
 }
