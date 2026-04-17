@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-
-project(brokolyone.editor_collab)
+project(EditorCollab VERSION 1.0.0)
 
 find_package(Geode REQUIRED)
 
