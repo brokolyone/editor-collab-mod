@@ -16,44 +16,27 @@ public:
     bool isHosting = false;
     bool isJoined = false;
     std::string roomCode = "";
-    std::map<int, CCPoint> remoteCursors;
-    std::map<int, CCSprite*> cursorSprites;
 
     void host() {
         isHosting = true;
         roomCode = std::to_string(100000 + rand() % 900000); 
-        FLAlertLayer::create("Host Created!", "Your code is: " + roomCode, "OK")->show();
+        FLAlertLayer::create("Host Created", "Your code: " + roomCode, "OK")->show();
     }
 
     void stopHost() {
         isHosting = false;
-        FLAlertLayer::create("Info", "Host turned off!", "OK")->show();
+        Notification::create("Host OFF", NotificationIcon::Info)->show();
     }
 
     void join(std::string code) {
         isJoined = true;
         roomCode = code;
-        FLAlertLayer::create("Success", "Joined session: " + code, "OK")->show();
+        FLAlertLayer::create("Joined!", "Code: " + code, "OK")->show();
     }
 
     void disconnect() {
         isJoined = false;
-        FLAlertLayer::create("Info", "Disconnected from session!", "OK")->show();
-    }
-
-    void updateCursor(int id, CCPoint pos, LevelEditorLayer* layer) {
-        if (!layer || !layer->m_objectLayer) return;
-        
-        remoteCursors[id] = pos;
-        if (cursorSprites.find(id) == cursorSprites.end()) {
-            auto cursor = CCSprite::createWithSpriteFrameName("GJ_cursor_001.png");
-            if (!cursor) return;
-            cursor->setScale(0.8f);
-            cursor->setOpacity(150);
-            layer->m_objectLayer->addChild(cursor, 100);
-            cursorSprites[id] = cursor;
-        }
-        cursorSprites[id]->setPosition(pos);
+        Notification::create("Disconnected", NotificationIcon::Info)->show();
     }
 };
 
@@ -64,19 +47,15 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         auto menu = this->getChildByID("creator-buttons-menu");
         if (!menu) return true;
 
-        // Кнопка Хоста
-        auto hostSprite = ButtonSprite::create("Host", "goldFont.fnt", "GJ_button_01.png", 0.6f);
         auto hostBtn = CCMenuItemSpriteExtra::create(
-            hostSprite,
+            CircleButtonSprite::createWithSpriteFrameName("GJ_plusBtn_001.png", 0.8f, CircleBaseColor::Green),
             this,
             menu_selector(MyCreatorLayer::onHost)
         );
         hostBtn->setID("host-button");
 
-        // Кнопка Присоединения
-        auto joinSprite = ButtonSprite::create("Join", "goldFont.fnt", "GJ_button_02.png", 0.6f);
         auto joinBtn = CCMenuItemSpriteExtra::create(
-            joinSprite,
+            CircleButtonSprite::createWithSpriteFrameName("GJ_shareBtn_001.png", 0.8f, CircleBaseColor::Blue),
             this,
             menu_selector(MyCreatorLayer::onJoin)
         );
@@ -90,28 +69,13 @@ class $modify(MyCreatorLayer, CreatorLayer) {
     }
 
     void onHost(CCObject*) {
-        if (CollabManager::get()->isJoined) {
-            FLAlertLayer::create("Error", "Leave other session first!", "OK")->show();
-            return;
-        }
-        if (CollabManager::get()->isHosting) {
-            CollabManager::get()->stopHost();
-        } else {
-            CollabManager::get()->host();
-        }
+        if (CollabManager::get()->isHosting) CollabManager::get()->stopHost();
+        else CollabManager::get()->host();
     }
 
     void onJoin(CCObject*) {
-        if (CollabManager::get()->isHosting) {
-            FLAlertLayer::create("Error", "Stop hosting first!", "OK")->show();
-            return;
-        }
-        
-        if (CollabManager::get()->isJoined) {
-            CollabManager::get()->disconnect();
-        } else {
-            CollabManager::get()->join("456272");
-        }
+        if (CollabManager::get()->isJoined) CollabManager::get()->disconnect();
+        else CollabManager::get()->join("456272");
     }
 };
 
@@ -123,11 +87,6 @@ class $modify(MyEditor, LevelEditorLayer) {
     }
 
     void syncLoop(float dt) {
-        if (!CollabManager::get()->isHosting && !CollabManager::get()->isJoined) return;
-        if (!m_editorUI) return;
-        
-        // В 2.2 touch position получается иначе, используем безопасный метод
-        CCPoint myPos = m_objectLayer->convertToNodeSpace(CCDirector::sharedDirector()->getWinSize() / 2); // Заглушка центра экрана
-        // Отправка на сервер будет добавлена при интеграции WS
+        // Logic for sync here
     }
 };

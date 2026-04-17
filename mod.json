@@ -8,7 +8,8 @@
 	"version": "v1.0.0",
 	"name": "Editor Collab",
 	"developer": "Brokoly",
-	"description": "Multiplayer editor for Geometry Dash.",
+	"description": "Multiplayer editor for Geometry Dash using Geode.",
+	"repository": "https://github.com/brokolyone/editor-collab-mod",
 	"dependencies": [
 		{
 			"id": "geode.loader",
