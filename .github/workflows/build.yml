@@ -34,5 +34,5 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-          sdk: nightly # Самые свежие биндинги для 2.2
+          sdk: latest
           cli: latest

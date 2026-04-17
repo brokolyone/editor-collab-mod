@@ -1,5 +1,5 @@
 {
-	"geode": "3.0.0",
+	"geode": "2.2.1",
 	"gd": {
 		"win": "2.206",
 		"android": "2.2.142"
@@ -13,7 +13,7 @@
 	"dependencies": [
 		{
 			"id": "geode.loader",
-			"version": "v3.0.0",
+			"version": "v2.2.1",
 			"importance": "required"
 		}
 	]
