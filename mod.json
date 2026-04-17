@@ -1,18 +1,18 @@
 {
-	"geode": "3.0.0",
+	"geode": "5.6.1",
 	"gd": {
-		"win": "2.206",
-		"android": "2.2.142"
+		"win": "2.207",
+		"android": "2.2.143"
 	},
 	"id": "brokolyone.editor_collab_mod",
-	"version": "v1.1.0",
+	"version": "v1.1.1",
 	"name": "Editor Collab",
 	"developer": "Brokoly",
-	"description": "Full multiplayer editor for Geometry Dash. Host or Join sessions with 6-digit codes.",
+	"description": "Full multiplayer editor for Geometry Dash using Geode 5.6.1.",
 	"dependencies": [
 		{
 			"id": "geode.loader",
-			"version": "v3.0.0",
+			"version": "v5.6.1",
 			"importance": "required"
 		}
 	],
