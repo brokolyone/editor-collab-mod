@@ -4,12 +4,11 @@
 		"win": "2.206",
 		"android": "2.2.142"
 	},
-	"id": "brokolyone.editor_collab",
+	"id": "brokolyone.editor_collab_mod",
 	"version": "v1.0.0",
 	"name": "Editor Collab",
 	"developer": "Brokoly",
-	"description": "Multiplayer editor for Geometry Dash using Geode.",
-	"repository": "https://github.com/brokolyone/editor-collab-mod",
+	"description": "Multiplayer editor for Geometry Dash.",
 	"dependencies": [
 		{
 			"id": "geode.loader",
