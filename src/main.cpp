@@ -25,7 +25,7 @@ public:
 
     void stopHost() {
         isHosting = false;
-        Notification::create("Host OFF", NotificationIcon::Info)->show();
+        FLAlertLayer::create("Info", "Host OFF", "OK")->show();
     }
 
     void join(std::string code) {
@@ -36,7 +36,7 @@ public:
 
     void disconnect() {
         isJoined = false;
-        Notification::create("Disconnected", NotificationIcon::Info)->show();
+        FLAlertLayer::create("Info", "Disconnected", "OK")->show();
     }
 };
 
@@ -47,15 +47,18 @@ class $modify(MyCreatorLayer, CreatorLayer) {
         auto menu = this->getChildByID("creator-buttons-menu");
         if (!menu) return true;
 
+        // Используем обычные ButtonSprite
+        auto hostSprite = ButtonSprite::create("Host", "goldFont.fnt", "GJ_button_01.png", 0.7f);
         auto hostBtn = CCMenuItemSpriteExtra::create(
-            CircleButtonSprite::createWithSpriteFrameName("GJ_plusBtn_001.png", 0.8f, CircleBaseColor::Green),
+            hostSprite,
             this,
             menu_selector(MyCreatorLayer::onHost)
         );
         hostBtn->setID("host-button");
 
+        auto joinSprite = ButtonSprite::create("Join", "goldFont.fnt", "GJ_button_02.png", 0.7f);
         auto joinBtn = CCMenuItemSpriteExtra::create(
-            CircleButtonSprite::createWithSpriteFrameName("GJ_shareBtn_001.png", 0.8f, CircleBaseColor::Blue),
+            joinSprite,
             this,
             menu_selector(MyCreatorLayer::onJoin)
         );
@@ -82,11 +85,6 @@ class $modify(MyCreatorLayer, CreatorLayer) {
 class $modify(MyEditor, LevelEditorLayer) {
     bool init(GJGameLevel* level, bool p1) {
         if (!LevelEditorLayer::init(level, p1)) return false;
-        this->schedule(schedule_selector(MyEditor::syncLoop), 0.1f);
         return true;
-    }
-
-    void syncLoop(float dt) {
-        // Logic for sync here
     }
 };
