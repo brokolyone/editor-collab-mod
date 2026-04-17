@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-
-# Имя проекта ДОЛЖНО быть без точек для CMake
-project(EditorCollabMod VERSION 1.1.0)
+project(EditorCollabMod VERSION 1.1.1)
 
 find_package(Geode REQUIRED)
 
